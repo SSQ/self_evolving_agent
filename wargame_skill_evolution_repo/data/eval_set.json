@@ -1,0 +1,588 @@
+{
+  "description": "兵棋推演评估集，80题，10类，关键词为规则专有数字/术语",
+  "evaluation_rule": "required中所有词均出现在回答中，且forbidden中所有词均不出现（否定词前置的不算命中），则判为正确",
+  "categories": {
+    "mobility_basic": "基本机动规则（8题）：测试机动停止、状态转换",
+    "vehicle_mobility": "车辆机动速度（8题）：测试地形/坡度对车辆速度影响",
+    "personnel_mobility": "人员机动（8题）：测试冲锋、疲劳、压制对人员影响",
+    "direct_fire_basic": "直瞄射击基础（10题）：测试武器展开、冷却、射击条件、战果",
+    "suppression": "压制与掩蔽（8题）：测试压制影响、掩蔽状态转换",
+    "observation_basic": "观察与通视（8题）：测试观察距离表、通视判断",
+    "indirect_fire": "间瞄射击（8题）：测试间瞄计划、校射、裁决规则",
+    "special_units": "特殊单位（8题）：测试巡飞弹、无人机、直升机规则",
+    "same_hex_combat": "同格交战（6题）：测试同格交战触发、裁决、优先级",
+    "complex_rules": "综合交叉规则（8题）：测试聚合解聚、工事、雷场、防空等"
+  },
+  "questions": [
+    {
+      "id": 1, "category": "mobility_basic", "difficulty": "easy",
+      "question": "地面棋子从机动状态转换为停止状态需要多长时间？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": true,
+      "note": "基本机动停止时间"
+    },
+    {
+      "id": 2, "category": "mobility_basic", "difficulty": "easy",
+      "question": "空中棋子转为悬停状态需要多长时间？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": true,
+      "note": "空中单位悬停时间"
+    },
+    {
+      "id": 3, "category": "mobility_basic", "difficulty": "easy",
+      "question": "同一个六角格内最多可以堆叠多少个本方地面单位？",
+      "ground_truth": {"required": ["4"], "forbidden": ["5", "3"]},
+      "initial_skill_handles": false,
+      "note": "堆叠上限，初始Skill不含堆叠规则"
+    },
+    {
+      "id": 4, "category": "mobility_basic", "difficulty": "medium",
+      "question": "棋子下达停止机动命令后，需要完成什么才能真正停止？",
+      "ground_truth": {"required": ["当前格", "机动"], "forbidden": ["立即", "立刻停止"]},
+      "initial_skill_handles": true,
+      "note": "停止机动需完成当前格"
+    },
+    {
+      "id": 5, "category": "mobility_basic", "difficulty": "medium",
+      "question": "对机动中的棋子下达停止机动命令，会有什么惩罚？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": true,
+      "note": "惩罚性转换时间"
+    },
+    {
+      "id": 6, "category": "mobility_basic", "difficulty": "medium",
+      "question": "地面棋子在机动转停止过程中，可以做哪些动作？",
+      "ground_truth": {"required": ["切换", "机动状态"], "forbidden": ["射击", "开火"]},
+      "initial_skill_handles": true,
+      "note": "机动转停止中可切换状态"
+    },
+    {
+      "id": 7, "category": "mobility_basic", "difficulty": "easy",
+      "question": "机动状态有哪些？它们之间是什么关系？",
+      "ground_truth": {"required": ["正常机动", "一级冲锋", "互斥"], "forbidden": ["同时", "并存"]},
+      "initial_skill_handles": true,
+      "note": "机动状态互斥"
+    },
+    {
+      "id": 8, "category": "mobility_basic", "difficulty": "medium",
+      "question": "棋子到达夺控点中心后，还需要什么条件才能执行夺控？",
+      "ground_truth": {"required": ["无敌方", "地面单位"], "forbidden": ["等待", "转换"]},
+      "initial_skill_handles": false,
+      "note": "夺控条件，初始Skill不含夺控规则"
+    },
+
+    {
+      "id": 9, "category": "vehicle_mobility", "difficulty": "easy",
+      "question": "车辆在丛林地机动时，速度是正常速度的多少？",
+      "ground_truth": {"required": ["1/2"], "forbidden": ["1/3", "1/4"]},
+      "initial_skill_handles": true,
+      "note": "丛林地 1/2"
+    },
+    {
+      "id": 10, "category": "vehicle_mobility", "difficulty": "easy",
+      "question": "车辆在居民地机动时，速度是正常速度的多少？",
+      "ground_truth": {"required": ["1/3"], "forbidden": ["1/2", "1/4"]},
+      "initial_skill_handles": true,
+      "note": "居民地 1/3"
+    },
+    {
+      "id": 11, "category": "vehicle_mobility", "difficulty": "easy",
+      "question": "车辆在大河流机动时，速度是正常速度的多少？",
+      "ground_truth": {"required": ["1/4"], "forbidden": ["1/2", "1/3"]},
+      "initial_skill_handles": true,
+      "note": "大河流 1/4"
+    },
+    {
+      "id": 12, "category": "vehicle_mobility", "difficulty": "easy",
+      "question": "车辆在松软地机动时，速度是正常速度的多少？",
+      "ground_truth": {"required": ["1/4"], "forbidden": ["1/2", "1/3"]},
+      "initial_skill_handles": true,
+      "note": "松软地 1/4"
+    },
+    {
+      "id": 13, "category": "vehicle_mobility", "difficulty": "medium",
+      "question": "车辆在2级坡度地形机动时，速度是正常速度的多少？",
+      "ground_truth": {"required": ["1/2"], "forbidden": ["1/3", "1/4"]},
+      "initial_skill_handles": true,
+      "note": "2级坡度 1/2"
+    },
+    {
+      "id": 14, "category": "vehicle_mobility", "difficulty": "medium",
+      "question": "车辆在3级坡度地形机动时，速度是正常速度的多少？",
+      "ground_truth": {"required": ["1/3"], "forbidden": ["1/2", "1/4"]},
+      "initial_skill_handles": true,
+      "note": "3级坡度 1/3"
+    },
+    {
+      "id": 15, "category": "vehicle_mobility", "difficulty": "medium",
+      "question": "坡度等级超过几级时，车辆无法通过？",
+      "ground_truth": {"required": ["5"], "forbidden": ["3", "4"]},
+      "initial_skill_handles": true,
+      "note": "坡度>5不可通过"
+    },
+    {
+      "id": 16, "category": "vehicle_mobility", "difficulty": "medium",
+      "question": "车辆沿道路行驶时，速度受地形和高差影响吗？",
+      "ground_truth": {"required": ["不受", "影响"], "forbidden": ["受地形影响", "受高差影响"]},
+      "initial_skill_handles": true,
+      "note": "道路不受地形影响"
+    },
+
+    {
+      "id": 17, "category": "personnel_mobility", "difficulty": "easy",
+      "question": "人员机动速度受地形影响吗？",
+      "ground_truth": {"required": ["不受", "影响"], "forbidden": ["受地形影响"]},
+      "initial_skill_handles": true,
+      "note": "人员不受地形影响"
+    },
+    {
+      "id": 18, "category": "personnel_mobility", "difficulty": "easy",
+      "question": "人员一级冲锋时，速度是正常机动的多少倍？",
+      "ground_truth": {"required": ["2", "倍"], "forbidden": ["4", "倍"]},
+      "initial_skill_handles": true,
+      "note": "一级冲锋 2倍"
+    },
+    {
+      "id": 19, "category": "personnel_mobility", "difficulty": "easy",
+      "question": "人员二级冲锋时，速度是正常机动的多少倍？",
+      "ground_truth": {"required": ["4", "倍"], "forbidden": ["2", "倍"]},
+      "initial_skill_handles": true,
+      "note": "二级冲锋 4倍"
+    },
+    {
+      "id": 20, "category": "personnel_mobility", "difficulty": "medium",
+      "question": "高差超过多少米时，人员速度降为原来的一半？",
+      "ground_truth": {"required": ["60"], "forbidden": ["50", "100"]},
+      "initial_skill_handles": true,
+      "note": "高差>60米"
+    },
+    {
+      "id": 21, "category": "personnel_mobility", "difficulty": "medium",
+      "question": "人员机动结束后，疲劳等级多久下降一级？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": true,
+      "note": "75秒降一级"
+    },
+    {
+      "id": 22, "category": "personnel_mobility", "difficulty": "medium",
+      "question": "人员在一级疲劳状态下，还能实施二级冲锋吗？",
+      "ground_truth": {"required": ["不"], "forbidden": ["可以", "能够"]},
+      "initial_skill_handles": true,
+      "note": "一级疲劳不能二级冲锋"
+    },
+    {
+      "id": 23, "category": "personnel_mobility", "difficulty": "medium",
+      "question": "人员遭到压制后会发生什么？",
+      "ground_truth": {"required": ["停止", "150"], "forbidden": ["立即", "继续"]},
+      "initial_skill_handles": true,
+      "note": "压制后150秒自动解除"
+    },
+    {
+      "id": 24, "category": "personnel_mobility", "difficulty": "hard",
+      "question": "人员在冲锋过程中遭到压制，当前格机动完成后多久压制自动解除？",
+      "ground_truth": {"required": ["150"], "forbidden": ["75", "300"]},
+      "initial_skill_handles": true,
+      "note": "压制150秒"
+    },
+
+    {
+      "id": 25, "category": "direct_fire_basic", "difficulty": "easy",
+      "question": "直瞄武器射击完毕后需要多长冷却时间？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": true,
+      "note": "武器冷却75秒"
+    },
+    {
+      "id": 26, "category": "direct_fire_basic", "difficulty": "easy",
+      "question": "车辆射击前需要展开武器，展开时间是多少？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": true,
+      "note": "武器展开75秒"
+    },
+    {
+      "id": 27, "category": "direct_fire_basic", "difficulty": "easy",
+      "question": "初始态势下车辆的武器状态是什么？",
+      "ground_truth": {"required": ["展开"], "forbidden": ["锁定", "收起"]},
+      "initial_skill_handles": true,
+      "note": "初始为展开状态"
+    },
+    {
+      "id": 28, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "直瞄射击的条件有哪些？",
+      "ground_truth": {"required": ["观察", "射程", "冷却"], "forbidden": ["随意", "任意"]},
+      "initial_skill_handles": true,
+      "note": "射击三条件"
+    },
+    {
+      "id": 29, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "坦克主炮在机动中能射击吗？",
+      "ground_truth": {"required": ["可以", "能"], "forbidden": ["不能", "不可"]},
+      "initial_skill_handles": true,
+      "note": "坦克行进间射击"
+    },
+    {
+      "id": 30, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "武器冷却期间可以同时执行其他命令吗？",
+      "ground_truth": {"required": ["可以", "能"], "forbidden": ["不能", "不可"]},
+      "initial_skill_handles": true,
+      "note": "冷却不影响机动"
+    },
+
+    {
+      "id": 31, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "直瞄射击的战果有哪些表示方式？",
+      "ground_truth": {"required": ["数字", "无效", "压制"], "forbidden": []},
+      "initial_skill_handles": false,
+      "note": "战果三种表示，初始Skill不含战果规则"
+    },
+    {
+      "id": 32, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "射击单位处于机动中时，战果判定会有什么影响？",
+      "ground_truth": {"required": ["不利", "修正"], "forbidden": ["有利", "好"]},
+      "initial_skill_handles": false,
+      "note": "机动中战果不利，初始Skill不含战果修正"
+    },
+    {
+      "id": 33, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "目标处于掩蔽地形时，对战果判定有什么影响？",
+      "ground_truth": {"required": ["不利", "修正"], "forbidden": ["有利", "好"]},
+      "initial_skill_handles": false,
+      "note": "掩蔽地形不利目标，初始Skill不含"
+    },
+    {
+      "id": 34, "category": "direct_fire_basic", "difficulty": "medium",
+      "question": "目标处于堆叠状态时，对射击方的战果判定有什么影响？",
+      "ground_truth": {"required": ["有利", "修正"], "forbidden": ["不利", "坏"]},
+      "initial_skill_handles": false,
+      "note": "堆叠有利射击方，初始Skill不含"
+    },
+
+    {
+      "id": 35, "category": "suppression", "difficulty": "easy",
+      "question": "压制状态持续多长时间后自动移除？",
+      "ground_truth": {"required": ["150"], "forbidden": ["75", "300"]},
+      "initial_skill_handles": true,
+      "note": "压制150秒"
+    },
+    {
+      "id": 36, "category": "suppression", "difficulty": "medium",
+      "question": "车辆被压制后，车内人员会怎样？",
+      "ground_truth": {"required": ["不会被压制", "不能下车"], "forbidden": ["被压制", "可以下车"]},
+      "initial_skill_handles": true,
+      "note": "车内人员不被压制但不能下车"
+    },
+    {
+      "id": 37, "category": "suppression", "difficulty": "medium",
+      "question": "被压制的步兵再次被裁决压制，会有什么后果？",
+      "ground_truth": {"required": ["损失", "1个班"], "forbidden": ["全灭", "没事"]},
+      "initial_skill_handles": true,
+      "note": "压制叠加损失1班"
+    },
+    {
+      "id": 38, "category": "suppression", "difficulty": "medium",
+      "question": "棋子处于掩蔽状态中被压制，掩蔽状态会结束吗？",
+      "ground_truth": {"required": ["不会", "结束"], "forbidden": ["会", "结束"]},
+      "initial_skill_handles": false,
+      "note": "掩蔽中被压制不结束掩蔽，初始Skill不含掩蔽规则"
+    },
+    {
+      "id": 39, "category": "suppression", "difficulty": "medium",
+      "question": "棋子转换为掩蔽状态需要多长时间？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": false,
+      "note": "掩蔽75秒，初始Skill不含掩蔽"
+    },
+    {
+      "id": 40, "category": "suppression", "difficulty": "medium",
+      "question": "棋子转为掩蔽状态后，如果射击会怎样？",
+      "ground_truth": {"required": ["解除", "掩蔽"], "forbidden": ["保持", "不变"]},
+      "initial_skill_handles": false,
+      "note": "射击解除掩蔽，初始Skill不含"
+    },
+    {
+      "id": 41, "category": "suppression", "difficulty": "hard",
+      "question": "先处于压制状态的棋子，可以执行掩蔽命令吗？",
+      "ground_truth": {"required": ["不"], "forbidden": ["可以", "能够"]},
+      "initial_skill_handles": false,
+      "note": "压制中不可掩蔽，初始Skill不含"
+    },
+    {
+      "id": 42, "category": "suppression", "difficulty": "hard",
+      "question": "坦克由停止状态转换掩蔽过程中射击了，会发生什么？",
+      "ground_truth": {"required": ["取消", "掩蔽"], "forbidden": ["继续", "保持"]},
+      "initial_skill_handles": false,
+      "note": "射击取消掩蔽，初始Skill不含"
+    },
+
+    {
+      "id": 43, "category": "observation_basic", "difficulty": "easy",
+      "question": "步兵对步兵的观察距离是多少格？",
+      "ground_truth": {"required": ["10"], "forbidden": ["25", "2"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 44, "category": "observation_basic", "difficulty": "easy",
+      "question": "步兵对车辆的观察距离是多少格？",
+      "ground_truth": {"required": ["25"], "forbidden": ["10", "2"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 45, "category": "observation_basic", "difficulty": "easy",
+      "question": "车辆对车辆的观察距离是多少格？",
+      "ground_truth": {"required": ["25"], "forbidden": ["10", "2"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 46, "category": "observation_basic", "difficulty": "easy",
+      "question": "车辆对无人机的观察距离是多少？",
+      "ground_truth": {"required": ["当前", "相邻"], "forbidden": ["10", "25"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 47, "category": "observation_basic", "difficulty": "medium",
+      "question": "棋子处于掩蔽状态时，被观察距离会怎样？",
+      "ground_truth": {"required": ["减半"], "forbidden": ["不变", "加倍"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 48, "category": "observation_basic", "difficulty": "medium",
+      "question": "棋子在居民地或丛林地内，被观察距离会怎样？",
+      "ground_truth": {"required": ["减半"], "forbidden": ["不变", "加倍"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 49, "category": "observation_basic", "difficulty": "medium",
+      "question": "相邻两个六角格之间是否总是通视？",
+      "ground_truth": {"required": ["是", "总是"], "forbidden": ["否", "不一定"]},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+    {
+      "id": 50, "category": "observation_basic", "difficulty": "medium",
+      "question": "高看低原则是什么意思？",
+      "ground_truth": {"required": ["高程", "高者", "观察"], "forbidden": []},
+      "initial_skill_handles": false,
+      "note": "初始无observation Skill"
+    },
+
+    {
+      "id": 51, "category": "indirect_fire", "difficulty": "easy",
+      "question": "间瞄射击特指哪个兵种的射击？",
+      "ground_truth": {"required": ["炮兵"], "forbidden": ["坦克", "步兵"]},
+      "initial_skill_handles": false,
+      "note": "初始Skill未包含间瞄规则"
+    },
+    {
+      "id": 52, "category": "indirect_fire", "difficulty": "medium",
+      "question": "间瞄计划的飞行阶段需要多长时间？",
+      "ground_truth": {"required": ["150"], "forbidden": ["75", "300"]},
+      "initial_skill_handles": false,
+      "note": "间瞄飞行150秒"
+    },
+    {
+      "id": 53, "category": "indirect_fire", "difficulty": "medium",
+      "question": "间瞄爆炸阶段持续多长时间？",
+      "ground_truth": {"required": ["300"], "forbidden": ["75", "150"]},
+      "initial_skill_handles": false,
+      "note": "爆炸300秒"
+    },
+    {
+      "id": 54, "category": "indirect_fire", "difficulty": "medium",
+      "question": "间瞄计划的冷却时间是多少？",
+      "ground_truth": {"required": ["300"], "forbidden": ["75", "150"]},
+      "initial_skill_handles": false,
+      "note": "间瞄冷却300秒"
+    },
+    {
+      "id": 55, "category": "indirect_fire", "difficulty": "medium",
+      "question": "间瞄裁决时，哪些单位可以提供校射？",
+      "ground_truth": {"required": ["地面", "单位", "无人机"], "forbidden": ["直升机", "巡飞弹"]},
+      "initial_skill_handles": false,
+      "note": "校射单位范围"
+    },
+    {
+      "id": 56, "category": "indirect_fire", "difficulty": "hard",
+      "question": "间瞄裁决对己方单位会造成伤害吗？",
+      "ground_truth": {"required": ["会"], "forbidden": ["不会", "不对己方"]},
+      "initial_skill_handles": false,
+      "note": "间瞄不分敌我"
+    },
+    {
+      "id": 57, "category": "indirect_fire", "difficulty": "hard",
+      "question": "间瞄裁决期间炮兵机动了，会发生什么？",
+      "ground_truth": {"required": ["取消", "裁决"], "forbidden": ["继续", "完成"]},
+      "initial_skill_handles": false,
+      "note": "炮兵机动取消间瞄"
+    },
+    {
+      "id": 58, "category": "indirect_fire", "difficulty": "hard",
+      "question": "间瞄战果修正中，目标处于掩蔽状态会怎样？",
+      "ground_truth": {"required": ["有利", "目标"], "forbidden": ["不利", "射击方"]},
+      "initial_skill_handles": false,
+      "note": "掩蔽利于目标"
+    },
+
+    {
+      "id": 59, "category": "special_units", "difficulty": "easy",
+      "question": "巡飞弹的飞行速度是多少？",
+      "ground_truth": {"required": ["8", "秒", "格"], "forbidden": ["4", "秒", "格"]},
+      "initial_skill_handles": false,
+      "note": "巡飞弹8秒/格"
+    },
+    {
+      "id": 60, "category": "special_units", "difficulty": "easy",
+      "question": "无人机的飞行速度是多少？",
+      "ground_truth": {"required": ["8", "秒", "格"], "forbidden": ["4", "秒", "格"]},
+      "initial_skill_handles": false,
+      "note": "无人机8秒/格"
+    },
+    {
+      "id": 61, "category": "special_units", "difficulty": "easy",
+      "question": "武装直升机的飞行速度是多少？",
+      "ground_truth": {"required": ["4", "秒", "格"], "forbidden": ["8", "秒", "格"]},
+      "initial_skill_handles": false,
+      "note": "直升机4秒/格"
+    },
+    {
+      "id": 62, "category": "special_units", "difficulty": "medium",
+      "question": "巡飞弹的巡飞时长是多少？",
+      "ground_truth": {"required": ["1200"], "forbidden": ["300", "150"]},
+      "initial_skill_handles": false,
+      "note": "巡飞弹1200秒"
+    },
+    {
+      "id": 63, "category": "special_units", "difficulty": "medium",
+      "question": "巡飞弹的侦察距离是多少格？",
+      "ground_truth": {"required": ["2"], "forbidden": ["10", "25"]},
+      "initial_skill_handles": false,
+      "note": "巡飞弹侦察2格"
+    },
+    {
+      "id": 64, "category": "special_units", "difficulty": "medium",
+      "question": "巡飞弹发射后，发射车还能发射其他巡飞弹吗？",
+      "ground_truth": {"required": ["不能", "不可"], "forbidden": ["可以", "能够"]},
+      "initial_skill_handles": false,
+      "note": "发射车只能同时有一枚"
+    },
+    {
+      "id": 65, "category": "special_units", "difficulty": "hard",
+      "question": "武装直升机对地面车辆的观察距离是多少格？",
+      "ground_truth": {"required": ["25"], "forbidden": ["10", "2"]},
+      "initial_skill_handles": false,
+      "note": "直升机观察车辆25格"
+    },
+    {
+      "id": 66, "category": "special_units", "difficulty": "hard",
+      "question": "地面单位对武装直升机的观察距离是多少格？",
+      "ground_truth": {"required": ["25"], "forbidden": ["10", "2"]},
+      "initial_skill_handles": false,
+      "note": "地面观察直升机25格"
+    },
+
+    {
+      "id": 67, "category": "same_hex_combat", "difficulty": "easy",
+      "question": "什么情况下会触发同格交战？",
+      "ground_truth": {"required": ["双方", "地面", "六角格"], "forbidden": []},
+      "initial_skill_handles": false,
+      "note": "同格交战触发条件"
+    },
+    {
+      "id": 68, "category": "same_hex_combat", "difficulty": "medium",
+      "question": "同格交战每隔多长时间自动进行一次射击裁决？",
+      "ground_truth": {"required": ["25"], "forbidden": ["75", "150"]},
+      "initial_skill_handles": false,
+      "note": "同格交战25秒一次"
+    },
+    {
+      "id": 69, "category": "same_hex_combat", "difficulty": "medium",
+      "question": "同格交战的攻击优先级是什么？",
+      "ground_truth": {"required": ["坦克", "战车", "人员"], "forbidden": []},
+      "initial_skill_handles": false,
+      "note": "攻击优先级"
+    },
+    {
+      "id": 70, "category": "same_hex_combat", "difficulty": "medium",
+      "question": "同格交战第一瞬间的射击是否受武器冷却限制？",
+      "ground_truth": {"required": ["不受"], "forbidden": ["受", "按照"]},
+      "initial_skill_handles": false,
+      "note": "首次射击不受冷却限制"
+    },
+    {
+      "id": 71, "category": "same_hex_combat", "difficulty": "hard",
+      "question": "同格交战时，格外的单位能对交战中的单位进行直瞄射击吗？",
+      "ground_truth": {"required": ["不能"], "forbidden": ["可以", "能够"]},
+      "initial_skill_handles": false,
+      "note": "格外不能直瞄射击交战单位"
+    },
+    {
+      "id": 72, "category": "same_hex_combat", "difficulty": "hard",
+      "question": "同格交战中下达机动指令脱离，会受到什么惩罚？",
+      "ground_truth": {"required": ["惩罚", "打击"], "forbidden": ["奖励", "有利"]},
+      "initial_skill_handles": false,
+      "note": "脱离受惩罚性打击"
+    },
+
+    {
+      "id": 73, "category": "complex_rules", "difficulty": "medium",
+      "question": "聚合操作需要多长时间完成？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": false,
+      "note": "聚合75秒"
+    },
+    {
+      "id": 74, "category": "complex_rules", "difficulty": "medium",
+      "question": "两个算子聚合后总班数不得超过多少？",
+      "ground_truth": {"required": ["4"], "forbidden": ["5", "3"]},
+      "initial_skill_handles": false,
+      "note": "聚合上限4班"
+    },
+    {
+      "id": 75, "category": "complex_rules", "difficulty": "medium",
+      "question": "人员进入工事需要多长时间？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": false,
+      "note": "进工事75秒"
+    },
+    {
+      "id": 76, "category": "complex_rules", "difficulty": "medium",
+      "question": "每个工事最多可容纳多少人/车班？",
+      "ground_truth": {"required": ["5"], "forbidden": ["4", "3"]},
+      "initial_skill_handles": false,
+      "note": "工事容量5班"
+    },
+    {
+      "id": 77, "category": "complex_rules", "difficulty": "hard",
+      "question": "人员隐蔽工事内的单位能被直瞄射击吗？",
+      "ground_truth": {"required": ["不能"], "forbidden": ["可以", "能够"]},
+      "initial_skill_handles": false,
+      "note": "隐蔽工事不能被射击"
+    },
+    {
+      "id": 78, "category": "complex_rules", "difficulty": "hard",
+      "question": "火箭布雷车最多可以进行几次布雷？",
+      "ground_truth": {"required": ["3"], "forbidden": ["5", "10"]},
+      "initial_skill_handles": false,
+      "note": "布雷3次"
+    },
+    {
+      "id": 79, "category": "complex_rules", "difficulty": "hard",
+      "question": "防空高炮的对空射程是多少格？",
+      "ground_truth": {"required": ["20"], "forbidden": ["50", "25"]},
+      "initial_skill_handles": false,
+      "note": "防空高炮20格"
+    },
+    {
+      "id": 80, "category": "complex_rules", "difficulty": "hard",
+      "question": "引导射击后，引导算子需要多长时间才能再次引导或直瞄射击？",
+      "ground_truth": {"required": ["75"], "forbidden": ["150", "300"]},
+      "initial_skill_handles": false,
+      "note": "引导射击后75秒"
+    }
+  ]
+}

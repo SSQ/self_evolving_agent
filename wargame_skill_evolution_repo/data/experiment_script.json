@@ -1,0 +1,136 @@
+{
+  "description": "兵棋推演实验脚本：80题，nudge_interval=10，每块10题同/相关类别，每次Nudge有清晰失败信号",
+  "nudge_interval": 10,
+  "probe_question_ids": [1, 3, 5, 9, 15, 19, 25, 29, 35, 41, 45, 49, 52, 56, 60, 64, 68, 72, 76, 80],
+  "expected_evolutions": [
+    {
+      "after_seq": 10, "block": "mobility_vehicle",
+      "trigger_reason": "机动与车辆速度问题大多答对，Reviewer预期无需修改",
+      "expected_action": "none_or_minor_patch", "expected_skill": "mobility"
+    },
+    {
+      "after_seq": 20, "block": "personnel_mobility",
+      "trigger_reason": "人员机动/冲锋/疲劳问题答对，Reviewer预期无需修改",
+      "expected_action": "none_or_minor_patch", "expected_skill": "mobility"
+    },
+    {
+      "after_seq": 30, "block": "direct_fire_basic",
+      "trigger_reason": "直瞄射击基础问题答对，Reviewer预期无需修改",
+      "expected_action": "none_or_minor_patch", "expected_skill": "direct_fire"
+    },
+    {
+      "after_seq": 40, "block": "suppression_observation",
+      "trigger_reason": "压制/掩蔽和观察问题大部分答对，可能需要微调掩蔽+射击交叉规则",
+      "expected_action": "patch", "expected_skill": "direct_fire"
+    },
+    {
+      "after_seq": 50, "block": "observation_advanced",
+      "trigger_reason": "观察通视问题答对，但压制+掩蔽交叉题可能失败",
+      "expected_action": "patch", "expected_skill": "direct_fire"
+    },
+    {
+      "after_seq": 60, "block": "indirect_fire_special",
+      "trigger_reason": "间瞄射击和特殊单位（巡飞弹/无人机）连续10题全部失败，完全缺失",
+      "expected_action": "create", "expected_skill": "indirect_fire（新建）"
+    },
+    {
+      "after_seq": 70, "block": "special_units_hex_combat",
+      "trigger_reason": "特殊单位（直升机）和同格交战全部失败，完全缺失",
+      "expected_action": "create", "expected_skill": "special_units（新建）和 same_hex_combat（新建）"
+    },
+    {
+      "after_seq": 80, "block": "complex_rules",
+      "trigger_reason": "聚合解聚、工事、雷场、防空、引导射击等复杂规则全部失败",
+      "expected_action": "create", "expected_skill": "complex_rules（新建）"
+    }
+  ],
+  "questions": [
+    {"seq": 1,  "eval_id": 1,  "question": "地面棋子从机动状态转换为停止状态需要多长时间？",                       "block": "mobility_vehicle"},
+    {"seq": 2,  "eval_id": 2,  "question": "空中棋子转为悬停状态需要多长时间？",                                         "block": "mobility_vehicle"},
+    {"seq": 3,  "eval_id": 3,  "question": "同一个六角格内最多可以堆叠多少个本方地面单位？",                              "block": "mobility_vehicle"},
+    {"seq": 4,  "eval_id": 4,  "question": "棋子下达停止机动命令后，需要完成什么才能真正停止？",                        "block": "mobility_vehicle"},
+    {"seq": 5,  "eval_id": 5,  "question": "对机动中的棋子下达停止机动命令，会有什么惩罚？",                              "block": "mobility_vehicle"},
+    {"seq": 6,  "eval_id": 6,  "question": "地面棋子在机动转停止过程中，可以做哪些动作？",                                "block": "mobility_vehicle"},
+    {"seq": 7,  "eval_id": 7,  "question": "机动状态有哪些？它们之间是什么关系？",                                        "block": "mobility_vehicle"},
+    {"seq": 8,  "eval_id": 8,  "question": "棋子到达夺控点中心后，还需要什么条件才能执行夺控？",                        "block": "mobility_vehicle"},
+    {"seq": 9,  "eval_id": 9,  "question": "车辆在丛林地机动时，速度是正常速度的多少？",                                  "block": "mobility_vehicle"},
+    {"seq": 10, "eval_id": 10, "question": "车辆在居民地机动时，速度是正常速度的多少？",                                  "block": "mobility_vehicle", "note": "第10题后触发Nudge#1"},
+
+    {"seq": 11, "eval_id": 11, "question": "车辆在大河流机动时，速度是正常速度的多少？",                                  "block": "personnel_mobility"},
+    {"seq": 12, "eval_id": 12, "question": "车辆在松软地机动时，速度是正常速度的多少？",                                  "block": "personnel_mobility"},
+    {"seq": 13, "eval_id": 13, "question": "车辆在2级坡度地形机动时，速度是正常速度的多少？",                            "block": "personnel_mobility"},
+    {"seq": 14, "eval_id": 14, "question": "车辆在3级坡度地形机动时，速度是正常速度的多少？",                            "block": "personnel_mobility"},
+    {"seq": 15, "eval_id": 15, "question": "坡度等级超过几级时，车辆无法通过？",                                          "block": "personnel_mobility"},
+    {"seq": 16, "eval_id": 16, "question": "车辆沿道路行驶时，速度受地形和高差影响吗？",                                  "block": "personnel_mobility"},
+    {"seq": 17, "eval_id": 17, "question": "人员机动速度受地形影响吗？",                                                  "block": "personnel_mobility"},
+    {"seq": 18, "eval_id": 18, "question": "人员一级冲锋时，速度是正常机动的多少倍？",                                    "block": "personnel_mobility"},
+    {"seq": 19, "eval_id": 19, "question": "人员二级冲锋时，速度是正常机动的多少倍？",                                    "block": "personnel_mobility"},
+    {"seq": 20, "eval_id": 20, "question": "高差超过多少米时，人员速度降为原来的一半？",                                  "block": "personnel_mobility", "note": "第20题后触发Nudge#2"},
+
+    {"seq": 21, "eval_id": 21, "question": "人员机动结束后，疲劳等级多久下降一级？",                                    "block": "direct_fire_basic"},
+    {"seq": 22, "eval_id": 22, "question": "人员在一级疲劳状态下，还能实施二级冲锋吗？",                                  "block": "direct_fire_basic"},
+    {"seq": 23, "eval_id": 23, "question": "人员遭到压制后会发生什么？",                                                  "block": "direct_fire_basic"},
+    {"seq": 24, "eval_id": 24, "question": "人员在冲锋过程中遭到压制，当前格机动完成后多久压制自动解除？",              "block": "direct_fire_basic"},
+    {"seq": 25, "eval_id": 25, "question": "直瞄武器射击完毕后需要多长冷却时间？",                                        "block": "direct_fire_basic"},
+    {"seq": 26, "eval_id": 26, "question": "车辆射击前需要展开武器，展开时间是多少？",                                    "block": "direct_fire_basic"},
+    {"seq": 27, "eval_id": 27, "question": "初始态势下车辆的武器状态是什么？",                                            "block": "direct_fire_basic"},
+    {"seq": 28, "eval_id": 28, "question": "直瞄射击的条件有哪些？",                                                      "block": "direct_fire_basic"},
+    {"seq": 29, "eval_id": 29, "question": "坦克主炮在机动中能射击吗？",                                                  "block": "direct_fire_basic"},
+    {"seq": 30, "eval_id": 30, "question": "武器冷却期间可以同时执行其他命令吗？",                                        "block": "direct_fire_basic", "note": "第30题后触发Nudge#3"},
+
+    {"seq": 31, "eval_id": 31, "question": "直瞄射击的战果有哪些表示方式？",                                              "block": "suppression_observation"},
+    {"seq": 32, "eval_id": 32, "question": "射击单位处于机动中时，战果判定会有什么影响？",                                "block": "suppression_observation"},
+    {"seq": 33, "eval_id": 33, "question": "目标处于掩蔽地形时，对战果判定有什么影响？",                                  "block": "suppression_observation"},
+    {"seq": 34, "eval_id": 34, "question": "目标处于堆叠状态时，对射击方的战果判定有什么影响？",                        "block": "suppression_observation"},
+    {"seq": 35, "eval_id": 35, "question": "压制状态持续多长时间后自动移除？",                                            "block": "suppression_observation"},
+    {"seq": 36, "eval_id": 36, "question": "车辆被压制后，车内人员会怎样？",                                              "block": "suppression_observation"},
+    {"seq": 37, "eval_id": 37, "question": "被压制的步兵再次被裁决压制，会有什么后果？",                                  "block": "suppression_observation"},
+    {"seq": 38, "eval_id": 38, "question": "棋子处于掩蔽状态中被压制，掩蔽状态会结束吗？",                                "block": "suppression_observation"},
+    {"seq": 39, "eval_id": 39, "question": "棋子转换为掩蔽状态需要多长时间？",                                            "block": "suppression_observation"},
+    {"seq": 40, "eval_id": 40, "question": "棋子转为掩蔽状态后，如果射击会怎样？",                                        "block": "suppression_observation", "note": "第40题后触发Nudge#4"},
+
+    {"seq": 41, "eval_id": 41, "question": "先处于压制状态的棋子，可以执行掩蔽命令吗？",                                  "block": "observation_advanced"},
+    {"seq": 42, "eval_id": 42, "question": "坦克由停止状态转换掩蔽过程中射击了，会发生什么？",                          "block": "observation_advanced"},
+    {"seq": 43, "eval_id": 43, "question": "步兵对步兵的观察距离是多少格？",                                              "block": "observation_advanced"},
+    {"seq": 44, "eval_id": 44, "question": "步兵对车辆的观察距离是多少格？",                                              "block": "observation_advanced"},
+    {"seq": 45, "eval_id": 45, "question": "车辆对车辆的观察距离是多少格？",                                              "block": "observation_advanced"},
+    {"seq": 46, "eval_id": 46, "question": "车辆对无人机的观察距离是多少？",                                              "block": "observation_advanced"},
+    {"seq": 47, "eval_id": 47, "question": "棋子处于掩蔽状态时，被观察距离会怎样？",                                      "block": "observation_advanced"},
+    {"seq": 48, "eval_id": 48, "question": "棋子在居民地或丛林地内，被观察距离会怎样？",                                  "block": "observation_advanced"},
+    {"seq": 49, "eval_id": 49, "question": "相邻两个六角格之间是否总是通视？",                                            "block": "observation_advanced"},
+    {"seq": 50, "eval_id": 50, "question": "高看低原则是什么意思？",                                                      "block": "observation_advanced", "note": "第50题后触发Nudge#5"},
+
+    {"seq": 51, "eval_id": 51, "question": "间瞄射击特指哪个兵种的射击？",                                                "block": "indirect_fire_special"},
+    {"seq": 52, "eval_id": 52, "question": "间瞄计划的飞行阶段需要多长时间？",                                            "block": "indirect_fire_special"},
+    {"seq": 53, "eval_id": 53, "question": "间瞄爆炸阶段持续多长时间？",                                                  "block": "indirect_fire_special"},
+    {"seq": 54, "eval_id": 54, "question": "间瞄计划的冷却时间是多少？",                                                  "block": "indirect_fire_special"},
+    {"seq": 55, "eval_id": 55, "question": "间瞄裁决时，哪些单位可以提供校射？",                                          "block": "indirect_fire_special"},
+    {"seq": 56, "eval_id": 56, "question": "间瞄裁决对己方单位会造成伤害吗？",                                            "block": "indirect_fire_special"},
+    {"seq": 57, "eval_id": 57, "question": "间瞄裁决期间炮兵机动了，会发生什么？",                                        "block": "indirect_fire_special"},
+    {"seq": 58, "eval_id": 58, "question": "间瞄战果修正中，目标处于掩蔽状态会怎样？",                                    "block": "indirect_fire_special"},
+    {"seq": 59, "eval_id": 59, "question": "巡飞弹的飞行速度是多少？",                                                    "block": "indirect_fire_special"},
+    {"seq": 60, "eval_id": 60, "question": "无人机的飞行速度是多少？",                                                    "block": "indirect_fire_special", "note": "第60题后触发Nudge#6"},
+
+    {"seq": 61, "eval_id": 61, "question": "武装直升机的飞行速度是多少？",                                                "block": "special_units_hex_combat"},
+    {"seq": 62, "eval_id": 62, "question": "巡飞弹的巡飞时长是多少？",                                                    "block": "special_units_hex_combat"},
+    {"seq": 63, "eval_id": 63, "question": "巡飞弹的侦察距离是多少格？",                                                  "block": "special_units_hex_combat"},
+    {"seq": 64, "eval_id": 64, "question": "巡飞弹发射后，发射车还能发射其他巡飞弹吗？",                                  "block": "special_units_hex_combat"},
+    {"seq": 65, "eval_id": 65, "question": "武装直升机对地面车辆的观察距离是多少格？",                                    "block": "special_units_hex_combat"},
+    {"seq": 66, "eval_id": 66, "question": "地面单位对武装直升机的观察距离是多少格？",                                    "block": "special_units_hex_combat"},
+    {"seq": 67, "eval_id": 67, "question": "什么情况下会触发同格交战？",                                                    "block": "special_units_hex_combat"},
+    {"seq": 68, "eval_id": 68, "question": "同格交战每隔多长时间自动进行一次射击裁决？",                                  "block": "special_units_hex_combat"},
+    {"seq": 69, "eval_id": 69, "question": "同格交战的攻击优先级是什么？",                                                "block": "special_units_hex_combat"},
+    {"seq": 70, "eval_id": 70, "question": "同格交战第一瞬间的射击是否受武器冷却限制？",                                  "block": "special_units_hex_combat", "note": "第70题后触发Nudge#7"},
+
+    {"seq": 71, "eval_id": 71, "question": "同格交战时，格外的单位能对交战中的单位进行直瞄射击吗？",                      "block": "complex_rules"},
+    {"seq": 72, "eval_id": 72, "question": "同格交战中下达机动指令脱离，会受到什么惩罚？",                                "block": "complex_rules"},
+    {"seq": 73, "eval_id": 73, "question": "聚合操作需要多长时间完成？",                                                  "block": "complex_rules"},
+    {"seq": 74, "eval_id": 74, "question": "两个算子聚合后总班数不得超过多少？",                                          "block": "complex_rules"},
+    {"seq": 75, "eval_id": 75, "question": "人员进入工事需要多长时间？",                                                  "block": "complex_rules"},
+    {"seq": 76, "eval_id": 76, "question": "每个工事最多可容纳多少人/车班？",                                              "block": "complex_rules"},
+    {"seq": 77, "eval_id": 77, "question": "人员隐蔽工事内的单位能被直瞄射击吗？",                                        "block": "complex_rules"},
+    {"seq": 78, "eval_id": 78, "question": "火箭布雷车最多可以进行几次布雷？",                                            "block": "complex_rules"},
+    {"seq": 79, "eval_id": 79, "question": "防空高炮的对空射程是多少格？",                                                "block": "complex_rules"},
+    {"seq": 80, "eval_id": 80, "question": "引导射击后，引导算子需要多长时间才能再次引导或直瞄射击？",                    "block": "complex_rules", "note": "第80题后触发Nudge#8"}
+  ]
+}
